@@ -1,2 +1,2 @@
-# 1.414...
+# one4
 An Arbitrary Precision Arithmetic Library (GO)
