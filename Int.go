@@ -185,10 +185,16 @@ func getBase() uint {
 }
 
 func (num Int) String() string {
+    strFmt := ""
+    if base == 1000000000 {
+        strFmt = "%09d"
+    } else {
+        strFmt = "%018d"
+    }
 	res := ""
 	i := 0
 	for ; i < len(num.mant)-1; i++ {
-		res = fmt.Sprintf("%018d", num.mant[i]) + res
+		res = fmt.Sprintf(strFmt, num.mant[i]) + res
 	}
 	res = fmt.Sprintf("%d", num.mant[i]) + res
 	if num.neg {
