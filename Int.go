@@ -127,27 +127,71 @@ func subMant(minu []uint, subt []uint) []uint {
 	return result[:i+1]
 }
 
-// Get the (Base) compelement of num
-// func complement(digits []uint) []uint {
-//     var comp = make([]uint, len(digits))
-//     for i, d = range digits {
-//         comp[i] = base - 1 - d
-//     }
-//     return comp
-// }
+func MultInt(a Int, b Int) Int {
+    var res Int
+    if a.neg != b.neg {
+        res.neg = true
+    }
+    res.mant = karatsuba(a.mant, b.mant)
+    return res
+}
+
+func karatsuba(x []uint, y []uint) []uint {
+    if len(x) <= 1 && len(y) <= 1 {
+        // TODO Don't change to int?
+        return MakeInt(int(x[0]*y[0])).mant
+    }
+    // Set y to be of smaller len
+    if len(x) < len(y) {
+        x, y = y, x
+    }
+    n := len(x)
+    m := n/2
+    // Lo will be bits 0 to m-1. Hi will be m onwards
+    var xl, xh,    yl, yh []uint
+
+    xl, xh = x[:m], x[m:]
+    if m >= len(y) {
+        yl = y
+        yh = []uint{0}
+    } else {
+        yl, yh = y[:m], y[m:]
+    }
+
+    a := karatsuba(xh, yh)
+    b := karatsuba(xl, yl)
+    e := karatsuba(sumMant(xl, xh), sumMant(yl, yh))
+    e = subMant(subMant(e, a), b)
+
+    res := sumMant(sumMant(lShift(a, uint(2*m)), lShift(e, uint(m))), b)
+    return res
+}
+
+// Increase pow of mant by base^pow
+func lShift(mant []uint, pow uint) []uint {
+    if len(mant) == 1 && mant[0] == 0 {
+        return mant
+    }
+    newMant := make([]uint, uint(len(mant))+pow)
+    c := uint(pow)
+    for i := 0; i < len(mant); i++ {
+        newMant[uint(i)+c] = mant[i]
+    }
+    return newMant
+}
 
 // Return true if a < b and false otherwise
 func lteMant(a []uint, b []uint) bool {
-	if len(a) != len(b) {
-		return len(a) < len(b)
-	}
+    if len(a) != len(b) {
+        return len(a) < len(b)
+    }
 
-	for i := len(a) - 1; i >= 0; i-- {
-		if a[i] != b[i] {
-			return a[i] < b[i]
-		}
-	}
-	return true
+    for i := len(a) - 1; i >= 0; i-- {
+        if a[i] != b[i] {
+            return a[i] < b[i]
+        }
+    }
+    return true
 }
 
 // Return true of a <= b and false otherwise
@@ -178,18 +222,23 @@ func getBase() uint {
 	maxUint := ^uint(0)
 	if maxUint == math.MaxUint32 {
 		// Base is 10^9
-		return 1000000000
+		// return 1000000000
+        return 10000
 	}
 	// Base is 10^18
-	return 1000000000000000000
+	// return 1000000000000000000
+    return 1000000000
 }
 
 func (num Int) String() string {
     strFmt := ""
-    if base == 1000000000 {
-        strFmt = "%09d"
+    // if base == 1000000000 {
+    if base == 10000 {
+        //strFmt = "%09d"
+        strFmt = "%04d"
     } else {
-        strFmt = "%018d"
+        // strFmt = "%018d"
+        strFmt = "%09d"
     }
 	res := ""
 	i := 0
