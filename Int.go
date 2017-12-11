@@ -3,7 +3,7 @@ package one4
 import (
 	"fmt"
 	"math"
-    "strconv"
+	"strconv"
 )
 
 var (
@@ -20,38 +20,38 @@ type Int struct {
 // An arbitrary number of digits may appear. Additionally, a `+` or '-'
 // may precede the form.
 func MakeIntStr(num string) Int {
-    var res Int
-    baseLen, bitLen := 9, 64
-    if base == 10000 {
-        baseLen, bitLen = 4, 32
-    }
+	var res Int
+	baseLen, bitLen := 9, 64
+	if base == 10000 {
+		baseLen, bitLen = 4, 32
+	}
 
-    fstD := num[0]
-    if fstD == '-' || fstD == '+' {
-        res.neg = fstD == '-'
-        num = num[1:]
-    }
+	fstD := num[0]
+	if fstD == '-' || fstD == '+' {
+		res.neg = fstD == '-'
+		num = num[1:]
+	}
 
-    mantLen := len(num)/baseLen
-    if len(num) % baseLen > 0 {
-        mantLen++
-    }
-    res.mant = make([]uint, mantLen)
+	mantLen := len(num) / baseLen
+	if len(num)%baseLen > 0 {
+		mantLen++
+	}
+	res.mant = make([]uint, mantLen)
 
-    remD := len(num)
-    i := 0
-    var bin uint64
-    for ; remD > baseLen; remD -= baseLen {
-        bin, _ = strconv.ParseUint(num[remD-baseLen:remD], 10, bitLen)
-        res.mant[i] = uint(bin)
-        i++
-    }
-    if remD > 0 {
-        bin, _ = strconv.ParseUint(num[:remD], 10, bitLen)
-        res.mant[mantLen-1] = uint(bin)
-    }
+	remD := len(num)
+	i := 0
+	var bin uint64
+	for ; remD > baseLen; remD -= baseLen {
+		bin, _ = strconv.ParseUint(num[remD-baseLen:remD], 10, bitLen)
+		res.mant[i] = uint(bin)
+		i++
+	}
+	if remD > 0 {
+		bin, _ = strconv.ParseUint(num[:remD], 10, bitLen)
+		res.mant[mantLen-1] = uint(bin)
+	}
 
-    return res
+	return res
 }
 
 func MakeInt(num int) Int {
